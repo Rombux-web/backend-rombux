@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    container_name: rombux-postgres
+    environment:
+      POSTGRES_USER: rombux_user
+      POSTGRES_PASSWORD: rombux_pass
+      POSTGRES_DB: rombux_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
