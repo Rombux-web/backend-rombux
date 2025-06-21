@@ -18,8 +18,11 @@ async function bootstrap() {
       sembrados++;
       console.log(`Sembrado: ${email}`);
     } catch (e) {
-      // Es posible que por colisión de emails se rechacen algunos
-      console.warn(`No se pudo sembrar ${email}:`, e.message);
+      const msg =
+        typeof e === 'object' && e !== null && 'message' in e
+          ? (e as { message: string }).message
+          : String(e);
+      console.warn(`No se pudo sembrar ${email}:`, msg);
     }
   }
 
