@@ -32,7 +32,21 @@ export class RaffleService {
     }
   }
 
-  async findAll(): Promise<RaffleParticipant[]> {
-    return this.raffleRepository.find();
+  async findAll(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [participants, total] = await this.raffleRepository.findAndCount({
+      skip,
+      take: limit,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    // Retorna directamente el objeto de paginación:
+    return {
+      data: participants,
+      total,
+      page,
+      last_page: Math.ceil(total / limit),
+    };
   }
 }

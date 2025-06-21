@@ -1,8 +1,22 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { RaffleService } from '../services/raffle.service';
 import { CreateRaffleParticipantDto } from '../dto/create-raffle-participant.dto';
 import { RaffleParticipant } from '../entities/raffle-participant.entity';
-import { Get } from '@nestjs/common';
+
+type PaginatedParticipants = {
+  data: RaffleParticipant[];
+  total: number;
+  page: number;
+  last_page: number;
+};
 
 @Controller('raffle')
 export class RaffleController {
@@ -16,7 +30,10 @@ export class RaffleController {
   }
 
   @Get('participants')
-  async findAll(): Promise<RaffleParticipant[]> {
-    return this.raffleService.findAll();
+  async findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<PaginatedParticipants> {
+    return this.raffleService.findAll(page, limit);
   }
 }
