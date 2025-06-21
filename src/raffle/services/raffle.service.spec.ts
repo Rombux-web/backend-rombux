@@ -48,7 +48,6 @@ describe('RaffleService', () => {
       } as RaffleParticipant;
       jest.spyOn(repo, 'create').mockReturnValue(participant);
 
-      // Simula error con code 23505
       const error: any = new Error('duplicate');
       error.code = '23505';
       jest.spyOn(repo, 'save').mockRejectedValue(error);
@@ -74,6 +73,36 @@ describe('RaffleService', () => {
         'unknown error',
       );
     });
+
+    it('should throw original error if error has no code property', async () => {
+      const participant = {
+        id: 1,
+        email: 'test@mail.com',
+        createdAt: new Date(),
+      } as RaffleParticipant;
+      jest.spyOn(repo, 'create').mockReturnValue(participant);
+
+      const error: any = new Error('no code property');
+      jest.spyOn(repo, 'save').mockRejectedValue(error);
+
+      await expect(service.create({ email: 'otro@mail.com' })).rejects.toThrow(
+        'no code property',
+      );
+    });
+
+    it('should throw if error is a string (covers hasCode=false)', async () => {
+      const participant = {
+        id: 1,
+        email: 'test@mail.com',
+        createdAt: new Date(),
+      } as RaffleParticipant;
+      jest.spyOn(repo, 'create').mockReturnValue(participant);
+
+      jest.spyOn(repo, 'save').mockRejectedValue('totally not an object');
+      await expect(service.create({ email: 'falso@mail.com' })).rejects.toEqual(
+        'totally not an object',
+      );
+    });
   });
 
   describe('findAll validations', () => {
@@ -81,6 +110,7 @@ describe('RaffleService', () => {
       jest.spyOn(repo, 'findAndCount').mockResolvedValue([[], 0]);
     });
 
+    // ------------- isNaN y valores de borde -----------------
     it('should throw if page is NaN', async () => {
       await expect(service.findAll(NaN, 10)).rejects.toThrow(
         'Los parámetros de paginación deben ser números',
@@ -93,6 +123,47 @@ describe('RaffleService', () => {
       );
     });
 
+    it('should throw if both page and limit are NaN', async () => {
+      await expect(service.findAll(NaN, NaN)).rejects.toThrow(
+        'Los parámetros de paginación deben ser números',
+      );
+    });
+
+    it('should NOT throw if page is undefined (defaults to 1)', async () => {
+      const result = await service.findAll(undefined as any, 10);
+      expect(result).toHaveProperty('data');
+    });
+
+    it('should NOT throw if limit is undefined (defaults to 10)', async () => {
+      const result = await service.findAll(1, undefined as any);
+      expect(result).toHaveProperty('data');
+    });
+
+    it('should throw if page is null (null is coerced to 0, which is < 1)', async () => {
+      await expect(service.findAll(null as any, 10)).rejects.toThrow(
+        'Los parámetros de paginación deben ser mayores que 0',
+      );
+    });
+
+    it('should throw if limit is null (null is coerced to 0, which is < 1)', async () => {
+      await expect(service.findAll(1, null as any)).rejects.toThrow(
+        'Los parámetros de paginación deben ser mayores que 0',
+      );
+    });
+
+    it('should throw if page is a string', async () => {
+      await expect(service.findAll('a' as any, 10)).rejects.toThrow(
+        'Los parámetros de paginación deben ser números',
+      );
+    });
+
+    it('should throw if limit is a string', async () => {
+      await expect(service.findAll(1, 'b' as any)).rejects.toThrow(
+        'Los parámetros de paginación deben ser números',
+      );
+    });
+
+    // ------------- parámetros numéricos fuera de rango -----------------
     it('should throw if page < 1', async () => {
       await expect(service.findAll(0, 10)).rejects.toThrow(
         'Los parámetros de paginación deben ser mayores que 0',
@@ -122,7 +193,7 @@ describe('RaffleService', () => {
 
       const result = await service.findAll(1, 10);
       expect(mockFn).toHaveBeenCalledWith({
-        skip: 0, // (1-1)*10 = 0
+        skip: 0,
         take: 10,
         order: { createdAt: 'DESC' },
       });
