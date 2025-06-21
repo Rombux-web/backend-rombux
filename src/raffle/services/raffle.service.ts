@@ -33,6 +33,21 @@ export class RaffleService {
   }
 
   async findAll(page = 1, limit = 10) {
+    if (isNaN(page) || isNaN(limit)) {
+      throw new ConflictException(
+        'Los parámetros de paginación deben ser números',
+      );
+    }
+    if (page < 1 || limit < 1) {
+      throw new ConflictException(
+        'Los parámetros de paginación deben ser mayores que 0',
+      );
+    }
+    if (limit > 100) {
+      throw new ConflictException(
+        'El límite de resultados por página no puede ser mayor a 100',
+      );
+    }
     const skip = (page - 1) * limit;
     const [participants, total] = await this.raffleRepository.findAndCount({
       skip,
@@ -41,7 +56,6 @@ export class RaffleService {
         createdAt: 'DESC',
       },
     });
-    // Retorna directamente el objeto de paginación:
     return {
       data: participants,
       total,
