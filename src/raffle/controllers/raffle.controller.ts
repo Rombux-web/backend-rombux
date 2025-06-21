@@ -2,6 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { RaffleService } from '../services/raffle.service';
 import { CreateRaffleParticipantDto } from '../dto/create-raffle-participant.dto';
 import { RaffleParticipant } from '../entities/raffle-participant.entity';
+import { Get } from '@nestjs/common';
 
 @Controller('raffle')
 export class RaffleController {
@@ -12,5 +13,10 @@ export class RaffleController {
     @Body() createRaffleParticipantDto: CreateRaffleParticipantDto,
   ): Promise<RaffleParticipant> {
     return this.raffleService.create(createRaffleParticipantDto);
+  }
+
+  @Get('participants')
+  async findAll(): Promise<RaffleParticipant[]> {
+    return this.raffleService.findAll();
   }
 }

@@ -31,4 +31,8 @@ export class RaffleService {
       throw error;
     }
   }
+
+  async findAll(): Promise<RaffleParticipant[]> {
+    return this.raffleRepository.find();
+  }
 }
