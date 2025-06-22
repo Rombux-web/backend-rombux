@@ -4,6 +4,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { RaffleModule } from './raffle/raffle.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -18,7 +20,21 @@ import { RaffleModule } from './raffle/raffle.module';
       autoLoadEntities: true,
       synchronize: true, // Solo para desarrollo
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          limit: 10, // Máximo 10 requests
+          ttl: 60, // Por cada 60 segundos
+        },
+      ],
+    }),
     RaffleModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
