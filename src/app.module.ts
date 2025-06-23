@@ -10,21 +10,36 @@ import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || '5433', 10),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      autoLoadEntities: true,
-      synchronize: true, // Solo para desarrollo
+    TypeOrmModule.forRootAsync({
+      useFactory: () => {
+        if (process.env.DATABASE_URL) {
+          // Modo Render/Producción
+          return {
+            type: 'postgres',
+            url: process.env.DATABASE_URL,
+            autoLoadEntities: true,
+            synchronize: true, // O false en producción.
+          };
+        } else {
+          // Modo Local/dev
+          return {
+            type: 'postgres',
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT || '5433', 10),
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
+            autoLoadEntities: true,
+            synchronize: true,
+          };
+        }
+      },
     }),
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          limit: 10, // Máximo 10 requests
-          ttl: 60, // Por cada 60 segundos
+          limit: 10,
+          ttl: 60,
         },
       ],
     }),
