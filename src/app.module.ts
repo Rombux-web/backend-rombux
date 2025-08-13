@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { RaffleModule } from './raffle/raffle.module';
+import { ContactModule } from './contact/contact.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -44,6 +45,7 @@ import { APP_GUARD } from '@nestjs/core';
       ],
     }),
     RaffleModule,
+    ContactModule,
   ],
   providers: [
     {
