@@ -19,6 +19,7 @@ Puedes probar y explorar la documentación interactiva en Swagger visitando:
     "apellido": "Muñoz",
     "email": "luis.munoz@example.com",
     "empresa": "Rombux",
+    "telefono": "+56912345678",
     "mensaje": "Me interesa el servicio de Growth.",
     "area_de_servicio": ["Growth", "Automatización"]
   }
@@ -31,6 +32,7 @@ Puedes probar y explorar la documentación interactiva en Swagger visitando:
     "apellido": "Muñoz",
     "email": "luis.munoz@example.com",
     "empresa": "Rombux",
+    "telefono": "+56912345678",
     "mensaje": "Me interesa el servicio de Growth.",
     "area_de_servicio": ["Growth", "Automatización"],
     "createdAt": "2025-08-13T21:25:33.000Z"
@@ -58,6 +60,7 @@ Puedes probar y explorar la documentación interactiva en Swagger visitando:
         "apellido": "Muñoz",
         "email": "luis.munoz@example.com",
         "empresa": "Rombux",
+        "telefono": "+56912345678",
         "mensaje": "Me interesa el servicio de Growth.",
         "area_de_servicio": ["Growth", "Automatización"],
         "createdAt": "2025-08-13T21:25:33.000Z"
@@ -149,6 +152,7 @@ curl -X POST http://localhost:3000/contact \
         "apellido": "Muñoz",
         "email": "luis.munoz@example.com",
         "empresa": "Rombux",
+        "telefono": "+56912345678",
         "mensaje": "Interesado en Growth",
         "area_de_servicio": ["Growth"]
       }'

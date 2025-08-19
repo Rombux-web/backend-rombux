@@ -5,6 +5,7 @@ import {
   IsArray,
   ArrayMinSize,
   IsIn,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -39,6 +40,15 @@ export class CreateContactSubmissionDto {
   @IsString()
   @IsNotEmpty()
   empresa: string;
+
+  @ApiProperty({
+    description: 'Teléfono',
+    example: '+56912345678',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  telefono?: string;
 
   @ApiProperty({
     description: 'Mensaje',

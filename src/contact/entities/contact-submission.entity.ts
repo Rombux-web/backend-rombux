@@ -37,6 +37,14 @@ export class ContactSubmission {
   empresa: string;
 
   @ApiProperty({
+    description: 'Teléfono',
+    example: '+56912345678',
+    required: false,
+  })
+  @Column({ nullable: true })
+  telefono?: string;
+
+  @ApiProperty({
     description: 'Mensaje',
     example: 'Me gustaría información sobre sus servicios.',
     type: String,
