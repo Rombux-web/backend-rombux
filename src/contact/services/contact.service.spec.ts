@@ -45,7 +45,7 @@ describe('ContactService', () => {
   });
 
   describe('create', () => {
-    it('should create a contact successfully', async () => {
+    it('should create a contact successfully without telefono', async () => {
       const contact = {
         id: 1,
         ...baseContact,
@@ -56,6 +56,24 @@ describe('ContactService', () => {
 
       const result = await service.create(baseContact);
       expect(result).toEqual(contact);
+    });
+
+    it('should create a contact successfully with telefono', async () => {
+      const contactWithTelefono = {
+        ...baseContact,
+        telefono: '+56912345678',
+      };
+      const contact = {
+        id: 2,
+        ...contactWithTelefono,
+        createdAt: new Date(),
+      } as ContactSubmission;
+      jest.spyOn(repo, 'create').mockReturnValue(contact);
+      jest.spyOn(repo, 'save').mockResolvedValue(contact);
+
+      const result = await service.create(contactWithTelefono);
+      expect(result).toEqual(contact);
+      expect(result.telefono).toBe('+56912345678');
     });
 
     it('should throw ConflictException if email already exists', async () => {

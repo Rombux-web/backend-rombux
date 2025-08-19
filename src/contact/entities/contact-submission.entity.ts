@@ -59,4 +59,12 @@ export class ContactSubmission {
   })
   @CreateDateColumn()
   createdAt: Date;
+
+  @ApiProperty({
+    description: 'Teléfono de contacto (opcional)',
+    example: '+56912345678',
+    required: false,
+  })
+  @Column({ nullable: true })
+  telefono?: string;
 }
