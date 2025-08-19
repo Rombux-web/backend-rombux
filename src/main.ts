@@ -10,7 +10,11 @@ async function bootstrap() {
   app.use(helmet());
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://frontend.rombux.com'],
+    origin: [
+      'http://localhost:3000',
+      'https://frontend.rombux.com',
+      'https://repo-prueba-taupe.vercel.app',
+    ],
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
   });
