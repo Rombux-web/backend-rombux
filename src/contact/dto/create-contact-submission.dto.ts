@@ -5,8 +5,9 @@ import {
   IsArray,
   ArrayMinSize,
   IsIn,
+  IsOptional,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 const AREAS_DE_SERVICIO = [
   'Benchmarking',
@@ -62,4 +63,9 @@ export class CreateContactSubmissionDto {
   @ArrayMinSize(1)
   @IsIn(AREAS_DE_SERVICIO, { each: true })
   area_de_servicio: string[];
+
+  @ApiPropertyOptional({ description: 'Teléfono', example: '+56912345678' })
+  @IsOptional()
+  @IsString()
+  telefono?: string;
 }

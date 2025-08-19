@@ -39,7 +39,7 @@ describe('ContactController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should call service.create on submit', async () => {
+  it('should call service.create on submit without telefono', async () => {
     const dto = {
       nombre: 'Juan',
       apellido: 'Pérez',
@@ -47,6 +47,21 @@ describe('ContactController', () => {
       empresa: 'MiEmpresa S.A.',
       mensaje: 'Hola, me interesa el servicio.',
       area_de_servicio: ['Growth'],
+      // telefono omitted (optional)
+    };
+    await controller.submit(dto);
+    expect(service.create).toHaveBeenCalledWith(dto);
+  });
+
+  it('should call service.create on submit with telefono', async () => {
+    const dto = {
+      nombre: 'Ana',
+      apellido: 'Gonzalez',
+      email: 'ana.gonzalez@empresa.com',
+      empresa: 'OtraEmpresa S.A.',
+      mensaje: 'Quiero información.',
+      area_de_servicio: ['Branding'],
+      telefono: '+56987654321',
     };
     await controller.submit(dto);
     expect(service.create).toHaveBeenCalledWith(dto);
