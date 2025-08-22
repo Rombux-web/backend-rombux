@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  Unique,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -28,6 +27,7 @@ export class ContactSubmission {
     description: 'Correo electrónico único',
     example: 'juan.perez@empresa.com',
   })
+  @Column()
   email: string;
 
   @ApiProperty({ description: 'Empresa', example: 'Empresa S.A.' })
