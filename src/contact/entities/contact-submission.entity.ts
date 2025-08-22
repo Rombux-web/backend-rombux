@@ -27,7 +27,7 @@ export class ContactSubmission {
     description: 'Correo electrónico único',
     example: 'juan.perez@empresa.com',
   })
-  @Column()
+  @Column({ nullable: false, default: 'sin@email.com' })
   email: string;
 
   @ApiProperty({ description: 'Empresa', example: 'Empresa S.A.' })
