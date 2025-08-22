@@ -19,22 +19,12 @@ export class ContactService {
     try {
       return await this.contactRepo.save(contact);
     } catch (error) {
-      // Type guard for PG error with 'code'
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'code' in error &&
-        typeof (error as { code: unknown }).code === 'string'
-      ) {
-        if ((error as { code: string }).code === '23505') {
-          throw new ConflictException('El correo ya existe');
-        }
-      }
-      // If error is instance of Error, rethrow it
+      // Ya no se lanza ConflictException por correo duplicado
+      // Si error es instancia de Error, rethrow
       if (error instanceof Error) {
         throw error;
       }
-      // If error is a string, wrap in Error and throw
+      // Si error es string, wrap en Error y throw
       if (typeof error === 'string') {
         throw new Error(error);
       }

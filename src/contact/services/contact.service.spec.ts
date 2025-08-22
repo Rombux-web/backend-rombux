@@ -76,22 +76,59 @@ describe('ContactService', () => {
       expect(result.telefono).toBe('+56912345678');
     });
 
-    it('should throw ConflictException if email already exists', async () => {
+    it('should allow duplicate emails (no ConflictException)', async () => {
       const contact = {
         id: 1,
         ...baseContact,
         email: 'duplicado@empresa.com',
       } as ContactSubmission;
       jest.spyOn(repo, 'create').mockReturnValue(contact);
-
-      // Simular error con code property
-      const error = new Error('duplicate');
-      (error as any).code = '23505';
-      jest.spyOn(repo, 'save').mockRejectedValue(error);
+      jest.spyOn(repo, 'save').mockResolvedValue(contact);
 
       await expect(
         service.create({ ...baseContact, email: 'duplicado@empresa.com' }),
-      ).rejects.toThrow(ConflictException);
+      ).resolves.toEqual(contact);
+    });
+
+    it('should allow multiple submissions with the same email', async () => {
+      const contact1 = {
+        id: 1,
+        ...baseContact,
+        email: 'duplicado@empresa.com',
+        mensaje: 'Primer mensaje',
+      } as ContactSubmission;
+      const contact2 = {
+        id: 2,
+        ...baseContact,
+        email: 'duplicado@empresa.com',
+        mensaje: 'Segundo mensaje',
+      } as ContactSubmission;
+
+      jest
+        .spyOn(repo, 'create')
+        .mockReturnValueOnce(contact1)
+        .mockReturnValueOnce(contact2);
+
+      jest
+        .spyOn(repo, 'save')
+        .mockResolvedValueOnce(contact1)
+        .mockResolvedValueOnce(contact2);
+
+      await expect(
+        service.create({
+          ...baseContact,
+          email: 'duplicado@empresa.com',
+          mensaje: 'Primer mensaje',
+        }),
+      ).resolves.toEqual(contact1);
+
+      await expect(
+        service.create({
+          ...baseContact,
+          email: 'duplicado@empresa.com',
+          mensaje: 'Segundo mensaje',
+        }),
+      ).resolves.toEqual(contact2);
     });
 
     it('should throw the original error if error is not 23505', async () => {
