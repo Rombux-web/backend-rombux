@@ -8,7 +8,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('contact_submissions')
-@Unique(['email'])
 export class ContactSubmission {
   @ApiProperty({
     description: 'ID único de la solicitud de contacto',
@@ -29,7 +28,6 @@ export class ContactSubmission {
     description: 'Correo electrónico único',
     example: 'juan.perez@empresa.com',
   })
-  @Column({ unique: true })
   email: string;
 
   @ApiProperty({ description: 'Empresa', example: 'Empresa S.A.' })

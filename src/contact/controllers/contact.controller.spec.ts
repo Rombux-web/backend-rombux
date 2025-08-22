@@ -71,4 +71,22 @@ describe('ContactController', () => {
     await controller.findAll(1, 10);
     expect(service.findAll).toHaveBeenCalledWith(1, 10);
   });
+
+  it('should allow multiple submissions with the same email', async () => {
+    const dto = {
+      nombre: 'Juan',
+      apellido: 'Pérez',
+      email: 'repetido@empresa.com',
+      empresa: 'MiEmpresa S.A.',
+      mensaje: 'Primer mensaje.',
+      area_de_servicio: ['Growth'],
+    };
+    await controller.submit(dto);
+    await controller.submit({ ...dto, mensaje: 'Segundo mensaje.' });
+    expect(service.create).toHaveBeenCalledWith(dto);
+    expect(service.create).toHaveBeenCalledWith({
+      ...dto,
+      mensaje: 'Segundo mensaje.',
+    });
+  });
 });
