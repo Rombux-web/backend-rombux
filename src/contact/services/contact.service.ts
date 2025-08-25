@@ -1,14 +1,18 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContactSubmission } from '../entities/contact-submission.entity';
 import { CreateContactSubmissionDto } from '../dto/create-contact-submission.dto';
+import { ContactPostEmailService } from '../../email/contact-post-email.service';
 
 @Injectable()
 export class ContactService {
+  private readonly logger = new Logger(ContactService.name);
+
   constructor(
     @InjectRepository(ContactSubmission)
     private readonly contactRepo: Repository<ContactSubmission>,
+    private readonly contactPostEmailService: ContactPostEmailService,
   ) {}
 
   async create(
@@ -16,21 +20,31 @@ export class ContactService {
   ): Promise<ContactSubmission> {
     const contact = this.contactRepo.create(createContactSubmissionDto);
 
+    let saved: ContactSubmission;
     try {
-      return await this.contactRepo.save(contact);
+      saved = await this.contactRepo.save(contact);
     } catch (error) {
-      // Ya no se lanza ConflictException por correo duplicado
-      // Si error es instancia de Error, rethrow
       if (error instanceof Error) {
         throw error;
       }
-      // Si error es string, wrap en Error y throw
       if (typeof error === 'string') {
         throw new Error(error);
       }
-      // Otherwise throw a generic error
       throw new Error('Unknown error');
     }
+
+    // Enviar email después de guardar el contacto
+    try {
+      await this.contactPostEmailService.sendContactEmail(
+        createContactSubmissionDto,
+      );
+    } catch (mailError) {
+      this.logger.error(`Error enviando email de contacto: ${mailError}`);
+      // Aquí decides si solo loguear el error o lanzar una excepción
+      // throw new Error('No se pudo enviar el correo de contacto'); // Si quieres fallar la petición
+    }
+
+    return saved;
   }
 
   async findAll(
@@ -42,7 +56,6 @@ export class ContactService {
     page: number;
     last_page: number;
   }> {
-    // Type checks for page and limit
     if (
       typeof page !== 'number' ||
       typeof limit !== 'number' ||
