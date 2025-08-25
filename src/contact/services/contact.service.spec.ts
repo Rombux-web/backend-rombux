@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ContactSubmission } from '../entities/contact-submission.entity';
 import { ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { ContactPostEmailService } from '../../email/contact-post-email.service';
 
 function isPgError(error: unknown): error is { code: string } {
   return (
@@ -27,6 +28,11 @@ describe('ContactService', () => {
     area_de_servicio: ['Growth'],
   };
 
+  // Mock del servicio de email
+  const mockContactPostEmailService = {
+    sendContactEmail: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -34,6 +40,10 @@ describe('ContactService', () => {
         {
           provide: getRepositoryToken(ContactSubmission),
           useClass: Repository,
+        },
+        {
+          provide: ContactPostEmailService,
+          useValue: mockContactPostEmailService,
         },
       ],
     }).compile();
