@@ -6,15 +6,13 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  const corsOrigins = process.env.CORS_ORIGIN?.split(',').map((origin) =>
+    origin.trim(),
+  );
   app.use(helmet());
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://frontend.rombux.com',
-      'https://repo-prueba-taupe.vercel.app',
-    ],
+    origin: corsOrigins,
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
   });
