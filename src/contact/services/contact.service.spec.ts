@@ -26,12 +26,17 @@ describe('ContactService', () => {
     empresa: 'Empresa S.A.',
     mensaje: 'Mensaje',
     area_de_servicio: ['Growth'],
+    captchaToken: 'test-captcha', // <-- agregado
   };
 
   // Mock del servicio de email
   const mockContactPostEmailService = {
     sendContactEmail: jest.fn().mockResolvedValue(undefined),
   };
+
+  jest.mock('../utils/recaptcha', () => ({
+    validateRecaptcha: jest.fn().mockResolvedValue(true),
+  }));
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -91,6 +96,7 @@ describe('ContactService', () => {
         id: 1,
         ...baseContact,
         email: 'duplicado@empresa.com',
+        createdAt: new Date(),
       } as ContactSubmission;
       jest.spyOn(repo, 'create').mockReturnValue(contact);
       jest.spyOn(repo, 'save').mockResolvedValue(contact);
@@ -106,12 +112,14 @@ describe('ContactService', () => {
         ...baseContact,
         email: 'duplicado@empresa.com',
         mensaje: 'Primer mensaje',
+        createdAt: new Date(),
       } as ContactSubmission;
       const contact2 = {
         id: 2,
         ...baseContact,
         email: 'duplicado@empresa.com',
         mensaje: 'Segundo mensaje',
+        createdAt: new Date(),
       } as ContactSubmission;
 
       jest
@@ -146,6 +154,7 @@ describe('ContactService', () => {
         id: 1,
         ...baseContact,
         email: 'error@empresa.com',
+        createdAt: new Date(),
       } as ContactSubmission;
       jest.spyOn(repo, 'create').mockReturnValue(contact);
 
@@ -163,6 +172,7 @@ describe('ContactService', () => {
         id: 1,
         ...baseContact,
         email: 'nocode@empresa.com',
+        createdAt: new Date(),
       } as ContactSubmission;
       jest.spyOn(repo, 'create').mockReturnValue(contact);
 
@@ -179,6 +189,7 @@ describe('ContactService', () => {
         id: 1,
         ...baseContact,
         email: 'string@empresa.com',
+        createdAt: new Date(),
       } as ContactSubmission;
       jest.spyOn(repo, 'create').mockReturnValue(contact);
 

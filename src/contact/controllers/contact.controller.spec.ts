@@ -2,6 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContactController } from './contact.controller';
 import { ContactService } from '../services/contact.service';
 
+// MOCK de la función de validación de reCAPTCHA
+jest.mock('../utils/recaptcha', () => ({
+  validateRecaptcha: jest.fn().mockResolvedValue(true),
+}));
+
 describe('ContactController', () => {
   let controller: ContactController;
   let service: ContactService;
@@ -47,6 +52,7 @@ describe('ContactController', () => {
       empresa: 'MiEmpresa S.A.',
       mensaje: 'Hola, me interesa el servicio.',
       area_de_servicio: ['Growth'],
+      captchaToken: 'test-captcha', // <--- agregado
       // telefono omitted (optional)
     };
     await controller.submit(dto);
@@ -62,6 +68,7 @@ describe('ContactController', () => {
       mensaje: 'Quiero información.',
       area_de_servicio: ['Branding'],
       telefono: '+56987654321',
+      captchaToken: 'test-captcha', // <--- agregado
     };
     await controller.submit(dto);
     expect(service.create).toHaveBeenCalledWith(dto);
@@ -80,6 +87,7 @@ describe('ContactController', () => {
       empresa: 'MiEmpresa S.A.',
       mensaje: 'Primer mensaje.',
       area_de_servicio: ['Growth'],
+      captchaToken: 'test-captcha', // <--- agregado
     };
     await controller.submit(dto);
     await controller.submit({ ...dto, mensaje: 'Segundo mensaje.' });
