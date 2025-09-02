@@ -6,6 +6,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ContactService } from '../services/contact.service';
 import { CreateContactSubmissionDto } from '../dto/create-contact-submission.dto';
@@ -19,6 +20,7 @@ import {
   ApiBody,
   ApiQuery,
 } from '@nestjs/swagger';
+import { validateRecaptcha } from '../utils/recaptcha';
 
 @ApiTags('Contact')
 @Controller('contact')
@@ -36,6 +38,15 @@ export class ContactController {
   async submit(
     @Body() createContactSubmissionDto: CreateContactSubmissionDto,
   ): Promise<ContactSubmission> {
+    // Validar el token de reCAPTCHA antes de crear el contacto
+    const captchaValid = await validateRecaptcha(
+      createContactSubmissionDto.captchaToken,
+    );
+    if (!captchaValid) {
+      throw new ForbiddenException('Captcha inválido');
+    }
+
+    // Si el captcha es válido, guardar el contacto normalmente
     return this.contactService.create(createContactSubmissionDto);
   }
 

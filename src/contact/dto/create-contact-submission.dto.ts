@@ -68,4 +68,9 @@ export class CreateContactSubmissionDto {
   @IsOptional()
   @IsString()
   telefono?: string;
+
+  @ApiProperty({ description: 'Token de reCAPTCHA', example: 'token...' })
+  @IsString()
+  @IsNotEmpty()
+  captchaToken: string;
 }
