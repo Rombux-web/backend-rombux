@@ -1,5 +1,3 @@
-// src/app.module.ts
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -7,6 +5,8 @@ import { RaffleModule } from './raffle/raffle.module';
 import { ContactModule } from './contact/contact.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -47,7 +47,9 @@ import { APP_GUARD } from '@nestjs/core';
     RaffleModule,
     ContactModule,
   ],
+  controllers: [AppController], // <-- AGREGADO
   providers: [
+    AppService, // <-- AGREGADO
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
