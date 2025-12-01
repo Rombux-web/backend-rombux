@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { RaffleModule } from './raffle/raffle.module';
 import { ContactModule } from './contact/contact.module';
+import { CampaignsModule } from './campaigns/campaigns.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -46,6 +47,7 @@ import { AppService } from './app.service';
     }),
     RaffleModule,
     ContactModule,
+    CampaignsModule,
   ],
   controllers: [AppController], // <-- AGREGADO
   providers: [
